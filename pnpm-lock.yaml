@@ -4,6 +4,9 @@ dependencies:
   '@hookform/resolvers':
     specifier: 3.0.1
     version: 3.0.1(react-hook-form@7.43.9)
+  lucide-react:
+    specifier: 0.130.1
+    version: 0.130.1(react@18.2.0)
   react:
     specifier: ^18.2.0
     version: 18.2.0
@@ -956,6 +959,14 @@ packages:
     dependencies:
       yallist: 3.1.1
     dev: true
+
+  /lucide-react@0.130.1(react@18.2.0):
+    resolution: {integrity: sha512-Fyyyd+ZGlZj/N8d/u9uoqFbRATI18WhynzVTjaeEqfVvsea8pYTSwBMfCg264TB2c5z9aiNAeNy67x8BiFyqXQ==}
+    peerDependencies:
+      react: ^16.5.1 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.2.0
+    dev: false
 
   /magic-string@0.27.0:
     resolution: {integrity: sha512-8UnnX2PeRAPZuN12svgR9j7M1uWMovg/CEnIwIG0LFkXSJJe4PdfUGiTGl8V9bsBHFUtfVINcSyYxd7q+kx9fA==}

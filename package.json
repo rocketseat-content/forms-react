@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "3.0.1",
+    "lucide-react": "0.130.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "7.43.9",
