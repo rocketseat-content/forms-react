@@ -4,6 +4,10 @@ import { PlusCircle, XCircle } from 'lucide-react'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Form } from './components/Form'
+import { supabase } from './lib/supabase'
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5mb
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
 const createUserSchema = z.object({
   name: z.string().nonempty({
@@ -30,6 +34,15 @@ const createUserSchema = z.object({
   })).min(3, {
     message: 'Pelo menos 3 tecnologias devem ser informadas.'
   }),
+  avatar: z.instanceof(FileList)
+    .refine((files) => !!files.item(0), "A imagem de perfil é obrigatória")
+    .refine((files) => files.item(0)!.size <= MAX_FILE_SIZE, `Tamanho máximo de 5MB`)
+    .refine(
+      (files) => ACCEPTED_IMAGE_TYPES.includes(files.item(0)!.type),
+      "Formato de imagem inválido"
+    ).transform(files => {
+      return files.item(0)!
+    }),
 })
 
 type CreateUserData = z.infer<typeof createUserSchema>
@@ -41,7 +54,17 @@ export function App() {
     resolver: zodResolver(createUserSchema),
   })
 
-  function createUser(data: CreateUserData) {
+  async function createUser(data: CreateUserData) {
+    const { data: uploadData, error } = await supabase
+      .storage
+      .from('forms-react')
+      .upload(`avatars/${data.avatar?.name}`, data.avatar, {
+        cacheControl: '3600',
+        upsert: false
+      })
+
+    console.log(uploadData)
+
     setOutput(JSON.stringify(data, null, 2))
   }
 
@@ -71,6 +94,15 @@ export function App() {
           onSubmit={handleSubmit(createUser)}
           className="flex flex-col gap-4 w-full max-w-xs"
         >
+          <Form.Field>
+            <Form.Label htmlFor="avatar">
+              Avatar
+            </Form.Label>
+
+            <Form.Input type="file" name="avatar" />
+            <Form.ErrorMessage field="avatar" />
+          </Form.Field>
+
           <Form.Field>
             <Form.Label htmlFor="name">
               Nome
@@ -146,9 +178,11 @@ export function App() {
         </form>
       </FormProvider>
 
-      <pre className="text-sm bg-zinc-800 text-zinc-100 p-6 rounded-lg">
-        {output}
-      </pre>
+      {output && (
+        <pre className="text-sm bg-zinc-800 text-zinc-100 p-6 rounded-lg">
+          {output}
+        </pre>
+      )}
     </main>
   )
 }
